@@ -1,5 +1,32 @@
+.commentForm{
+    display: flex;
+}
+
 .comments {
+    width: auto;
     border: 1px solid;
     margin: 10px;
+    padding: 5px;
     border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: right;
+}
+
+.mainComment{
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    padding: 5px;
+    margin:5px;
+}
+
+.reply {
+    display: flex;
+    justify-content: space-between;
+    width:80%;
+    border: 1px solid;
+    margin: 7px;
+    padding: 10px;
+    border-radius: 10px; 
 }

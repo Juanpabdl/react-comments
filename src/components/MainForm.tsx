@@ -10,16 +10,17 @@ interface Comment{
 const Comment = (props:{text: string}) =>{
     const {text} = props
     return (
-        <div >
+        <>
             <p>{text}</p>
-        </div>    
+        </>    
     )
 }
 
 const MainForm = () => {
     const [commentList,setCommentList] = useState<Comment[]>([])
     const [newComment,setNewComment] = useState<string>("")
-    const [currentComment,setcurrentComment] = useState<number>(0)
+    const [currentComment,setcurrentComment] = useState<number|null>(null)
+    const [newReply,setNewReply] = useState<string>("")
     //const [newResponse,setNewResponse] = useState<string>("")
 
     const handleChangeComment = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -45,25 +46,64 @@ const MainForm = () => {
         setcurrentComment(commentId)
     }
 
+    const handleSendReply = () => {
+        const replyObj:Comment={
+            id:commentList.length+1,
+            text: newReply,
+            replies: []
+        }
+
+        const addedComment = commentList.map((comment)=>{
+            if(comment.id == currentComment){
+                return {...comment, replies:[...comment.replies,replyObj]}
+            }
+            return comment;
+        })
+
+        setCommentList(addedComment);
+        setcurrentComment(null);
+        setNewReply("");
+    }
+
     return(
         <>
             <h1>Comment Form</h1>
-            <form onSubmit={handleSubmitComment}>
-                <div className="formDiv">
-                    <label> New Comment: </label>
+            <form className="commentForm" onSubmit={handleSubmitComment}>
+                <div>
+                    <label style={{marginRight:10}}> New Comment: </label>
                     <input type="text" id="newComment" value={newComment} onChange={handleChangeComment}></input>
                 </div>
-                <div className="formDiv">
-                    <button  className="button">Send</button>
-                </div>
+                <button style={{marginLeft:10}}>Send</button>
             </form>
             <div>
                 <h1>Comments</h1>
                 {
                     commentList.map((comment)=>(
                         <div className="comments">
-                            <Comment key={comment.id} text={comment.text}/>
-                            <button onClick={() => handleNewReply(comment.id)}>Reply</button>
+                            <div className="mainComment">
+                                <Comment key={comment.id} text={comment.text}/>
+                                <button 
+                                style={{marginLeft:10}}
+                                onClick={() => handleNewReply(comment.id)}>Reply</button>
+                            </div>
+                            {currentComment == comment.id && (
+                                <form>
+                                    <input 
+                                    type="text" 
+                                    id="newReply" 
+                                    value={newReply} 
+                                    onChange={(e)=>{setNewReply(e.target.value)}} />
+                                    <button 
+                                    style={{marginLeft:10}}
+                                    onClick={handleSendReply}>Send Reply</button>
+                                </form>
+                            )}
+                            {comment.replies.map((reply)=>(
+                                <div className="reply">
+                                    <p>Respuesta: </p>
+                                    <Comment key={reply.id} text={reply.text}/>
+                                </div>
+                            ))}
                         </div>
                     ))
                 }
