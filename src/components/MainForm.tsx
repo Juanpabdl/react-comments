@@ -1,19 +1,25 @@
 import React, {useState} from "react";
+import './MainForm.css';
 
 interface Comment{
     id: number,
-    text:string
-    responses: Comment[]
+    text: string,
+    replies: Comment[]
+}
+
+const Comment = (props:{text: string}) =>{
+    const {text} = props
+    return (
+        <div >
+            <p>{text}</p>
+        </div>    
+    )
 }
 
 const MainForm = () => {
-    /*const [formData, setFormData] = useState<Comment>({
-        id:
-        comment:""
-        });
-    const [sentData, setSentData] = useState(false)*/
     const [commentList,setCommentList] = useState<Comment[]>([])
     const [newComment,setNewComment] = useState<string>("")
+    const [currentComment,setcurrentComment] = useState<number>(0)
     //const [newResponse,setNewResponse] = useState<string>("")
 
     const handleChangeComment = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -28,15 +34,19 @@ const MainForm = () => {
         const commentObj : Comment = {
             id: commentList.length + 1,
             text : newComment,
-            responses : [],
+            replies : [],
         };
         setCommentList([...commentList, commentObj])
         setNewComment("")
         }
     }
 
+    const handleNewReply  = (commentId: number) =>{
+        setcurrentComment(commentId)
+    }
+
     return(
-        <div>
+        <>
             <h1>Comment Form</h1>
             <form onSubmit={handleSubmitComment}>
                 <div className="formDiv">
@@ -47,7 +57,18 @@ const MainForm = () => {
                     <button  className="button">Send</button>
                 </div>
             </form>
-        </div>
+            <div>
+                <h1>Comments</h1>
+                {
+                    commentList.map((comment)=>(
+                        <div className="comments">
+                            <Comment key={comment.id} text={comment.text}/>
+                            <button onClick={() => handleNewReply(comment.id)}>Reply</button>
+                        </div>
+                    ))
+                }
+            </div>
+        </>
     )
 }
 export default MainForm
